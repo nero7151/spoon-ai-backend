@@ -35,7 +35,7 @@ model Requirement {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   content    String
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    Int
   recipe     Recipe?
 
@@ -49,9 +49,9 @@ model Recipe {
   description    String?
   views          Int           @default(0)
   score          Float?
-  user           User          @relation(fields: [user_id], references: [id])
+  user           User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id        Int
-  requirement    Requirement   @relation(fields: [requirement_id], references: [id])
+  requirement    Requirement   @relation(fields: [requirement_id], references: [id], onDelete: Cascade)
   requirement_id Int           @unique
   reviews        Review[]
   savedRecipes   SavedRecipe[]
@@ -62,9 +62,9 @@ model Recipe {
 model SavedRecipe {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    Int
-  recipe     Recipe   @relation(fields: [recipe_id], references: [id])
+  recipe     Recipe   @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
   recipe_id  Int
 
   @@unique([user_id, recipe_id])
@@ -76,9 +76,9 @@ model Review {
   content    String
   rating     Int
   created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    Int
-  recipe     Recipe   @relation(fields: [recipe_id], references: [id])
+  recipe     Recipe   @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
   recipe_id  Int
 
   @@map("reviews")
