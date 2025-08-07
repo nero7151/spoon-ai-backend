@@ -10,9 +10,9 @@ export class UserService {
     return this.prisma.user.findMany();
   }
 
-  async findOne(id: string): Promise<User | null> {
+  async findOne(username: string): Promise<User | null> {
     return this.prisma.user.findUnique({
-      where: { id: Number(id) },
+      where: { username: username },
     });
   }
 }
