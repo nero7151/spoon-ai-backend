@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   Request,
   UseGuards,
@@ -18,6 +20,11 @@ export class RecipeController {
   @Get()
   async findAll(): Promise<Recipe[]> {
     return await this.recipeService.findAll();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Recipe | null> {
+    return await this.recipeService.findOne({ id });
   }
 
   @Post('generate')
