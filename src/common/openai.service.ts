@@ -110,7 +110,7 @@ export class OpenAIService {
         },
       });
 
-  console.log('OpenAI 응답:', completion.choices);
+      console.log('OpenAI 응답:', completion.choices);
 
       const message = completion.choices[0]?.message;
       if (!message) {
@@ -130,7 +130,7 @@ export class OpenAIService {
       }
 
       // Parse the JSON response
-  const recipeData = JSON.parse(responseContent) as RecipeGenerationResult;
+      const recipeData = JSON.parse(responseContent) as RecipeGenerationResult;
 
       // Validate the response structure
       this.validateRecipeResponse(recipeData);

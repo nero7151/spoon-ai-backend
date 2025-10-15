@@ -21,12 +21,33 @@ export class RecipeService {
   ) {}
 
   async findAll(): Promise<Recipe[]> {
-    return await this.prisma.recipe.findMany({
+    const recipes = await this.prisma.recipe.findMany({
       include: {
         requirement: true,
         user: true,
+        _count: {
+          select: { reviews: true },
+        },
       },
     });
+
+    // Compute average rating for each recipe when score is null or to ensure up-to-date
+    const results = await Promise.all(
+      recipes.map(async (r) => {
+        if (typeof (r as any).score === 'number' && (r as any).score !== null)
+          return r;
+
+        const agg = await this.prisma.review.aggregate({
+          where: { recipe_id: r.id },
+          _avg: { rating: true },
+        });
+
+        const avg = agg._avg.rating;
+        return { ...r, score: avg ?? null } as any;
+      }),
+    );
+
+    return results as any;
   }
 
   async findOne(where: Prisma.RecipeWhereUniqueInput): Promise<Recipe | null> {

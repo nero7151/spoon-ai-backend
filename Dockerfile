@@ -8,7 +8,6 @@ RUN npm install -g @nestjs/cli
 FROM base AS development
 ENV NODE_ENV=development
 RUN npm install
-RUN npx prisma generate
 # COPY . .
 CMD ["npm", "run", "start:dev"]
 
@@ -18,15 +17,18 @@ ENV NODE_ENV=production
 RUN npm ci
 COPY . .
 RUN npm run build
+RUN npx prisma generate
 
 # ---------- Production Stage ----------
 FROM node:24-alpine AS production
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Only copy the dist and production deps
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY --from=build /app/dist ./dist
+# Copy compiled dist and generated Prisma client from build stage
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/generated ./generated
 
 CMD ["node", "dist/main"]
