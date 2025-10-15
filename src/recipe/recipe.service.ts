@@ -30,11 +30,32 @@ export class RecipeService {
   }
 
   async findOne(where: Prisma.RecipeWhereUniqueInput): Promise<Recipe | null> {
+    // If fetching by id, increment view count and include reviews
+    if ((where as any).id) {
+      const id = (where as any).id as number;
+      return await this.prisma.recipe.update({
+        where: { id },
+        data: { views: { increment: 1 } },
+        include: {
+          requirement: true,
+          user: true,
+          reviews: {
+            include: { user: true },
+            orderBy: { created_at: 'desc' },
+          },
+        },
+      });
+    }
+
     return await this.prisma.recipe.findUnique({
       where,
       include: {
         requirement: true,
         user: true,
+        reviews: {
+          include: { user: true },
+          orderBy: { created_at: 'desc' },
+        },
       },
     });
   }

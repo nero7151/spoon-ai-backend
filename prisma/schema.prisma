@@ -72,9 +72,8 @@ model SavedRecipe {
 }
 
 model Review {
-  id         Int      @id @default(autoincrement())
+  id         Int      @id @default(autoincrement()) @map("review_id")
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
   content    String?
   rating     Int
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
