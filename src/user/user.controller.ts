@@ -10,6 +10,8 @@ import {
   Request,
   UseGuards,
   UseInterceptors,
+  Delete,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserCreate } from './dto/user-create.dto';
@@ -50,8 +52,25 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() user: Partial<User>,
+    @Request() req: { user: User },
   ): Promise<User> {
+    // allow users to update only their own profile
+    if (req.user.id !== id) {
+      throw new ForbiddenException('Cannot update other user');
+    }
     return await this.userService.update(id, user);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() req: { user: User },
+  ) {
+    if (req.user.id !== id) {
+      throw new ForbiddenException('Cannot delete other user');
+    }
+    return await this.userService.remove(id);
   }
 
   @Post('register')

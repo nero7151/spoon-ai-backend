@@ -49,6 +49,16 @@ export class UserService {
     });
   }
 
+  async remove(id: number) {
+    const existingUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!existingUser) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    // Delete the user. Cascade behavior depends on DB schema/migrations.
+    await this.prisma.user.delete({ where: { id } });
+    return { deleted: true };
+  }
+
   async register(userCreate: UserCreate): Promise<User> {
     const hashedPassword: string = await bcrypt.hash(
       userCreate.password,
