@@ -8,6 +8,7 @@ RUN npm install -g @nestjs/cli
 FROM base AS development
 ENV NODE_ENV=development
 RUN npm install
+RUN npx prisma generate
 # COPY . .
 CMD ["npm", "run", "start:dev"]
 
