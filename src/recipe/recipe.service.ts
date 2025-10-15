@@ -175,4 +175,19 @@ ${generatedRecipe.tags.join(', ')}`,
       );
     }
   }
+
+  async remove(userId: number, recipeId: number) {
+    const recipe = await this.prisma.recipe.findUnique({
+      where: { id: recipeId },
+    });
+    if (!recipe) {
+      throw new HttpException('Recipe not found', HttpStatus.NOT_FOUND);
+    }
+    if (recipe.user_id !== userId) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
+    await this.prisma.recipe.delete({ where: { id: recipeId } });
+    return { deleted: true };
+  }
 }

@@ -33,6 +33,12 @@ export class UserController {
     return await this.userService.findOne(req.user.id);
   }
 
+  @Get('me/recipes')
+  @UseGuards(JwtAuthGuard)
+  async myRecipes(@Request() req: { user: User }) {
+    return this.userService.getRecipes(req.user.id);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {

@@ -62,4 +62,12 @@ export class UserService {
       },
     });
   }
+
+  async getRecipes(userId: number) {
+    return this.prisma.recipe.findMany({
+      where: { user_id: userId },
+      include: { requirement: true, _count: { select: { reviews: true } } },
+      orderBy: { created_at: 'desc' },
+    });
+  }
 }
