@@ -34,7 +34,7 @@ export class OpenAIService {
         messages: [
           {
             role: 'system',
-            content: `You are a professional chef and recipe creator. You create detailed, practical recipes based on user requirements. Always respond in Korean language.`,
+            content: `당신은 전문 셰프이자 레시피 작성가입니다. 사용자의 요구사항에 맞춰 상세하고 실용적인 레시피를 작성합니다. 응답은 항상 한국어로 해주세요.`,
           },
           {
             role: 'user',
@@ -51,45 +51,44 @@ export class OpenAIService {
               properties: {
                 title: {
                   type: 'string',
-                  description: 'The title of the recipe',
+                  description: '레시피 제목',
                 },
                 description: {
                   type: 'string',
-                  description: 'A brief description of the dish',
+                  description: '요리 소개(간단한 설명)',
                 },
                 ingredients: {
                   type: 'array',
-                  description: 'List of ingredients with specific measurements',
+                  description: '정량이 포함된 재료 목록',
                   items: {
                     type: 'string',
                   },
                 },
                 instructions: {
                   type: 'array',
-                  description: 'Step-by-step cooking instructions',
+                  description: '단계별 조리 방법',
                   items: {
                     type: 'string',
                   },
                 },
                 cookingTime: {
                   type: 'number',
-                  description: 'Cooking time in minutes',
+                  description: '조리 시간(분)',
                   minimum: 1,
                 },
                 servings: {
                   type: 'number',
-                  description: 'Number of servings',
+                  description: '몇 인분인지',
                   minimum: 1,
                 },
                 difficulty: {
                   type: 'string',
-                  description: 'Difficulty level of the recipe',
+                  description: '난이도',
                   enum: ['easy', 'medium', 'hard'],
                 },
                 tags: {
                   type: 'array',
-                  description:
-                    'Tags describing the recipe (cuisine type, dietary info, etc.)',
+                  description: '레시피를 설명하는 태그(예: 한식, 채식 등)',
                   items: {
                     type: 'string',
                   },
@@ -111,37 +110,37 @@ export class OpenAIService {
         },
       });
 
-      console.log('OpenAI response:', completion.choices);
+  console.log('OpenAI 응답:', completion.choices);
 
       const message = completion.choices[0]?.message;
       if (!message) {
-        throw new Error('No response from OpenAI');
+        throw new Error('OpenAI로부터 응답이 없습니다');
       }
 
       // Check for refusal
       if (message.refusal) {
         throw new Error(
-          `OpenAI refused to generate recipe: ${message.refusal}`,
+          `OpenAI가 레시피 생성을 거부했습니다: ${message.refusal}`,
         );
       }
 
       const responseContent = message.content;
       if (!responseContent) {
-        throw new Error('No content in OpenAI response');
+        throw new Error('OpenAI 응답에 내용이 없습니다');
       }
 
       // Parse the JSON response
-      const recipeData = JSON.parse(responseContent) as RecipeGenerationResult;
+  const recipeData = JSON.parse(responseContent) as RecipeGenerationResult;
 
       // Validate the response structure
       this.validateRecipeResponse(recipeData);
 
       return recipeData;
     } catch (error) {
-      console.error('Error generating recipe with OpenAI:', error);
+      console.error('OpenAI로 레시피 생성 중 오류:', error);
       const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to generate recipe: ${errorMessage}`);
+        error instanceof Error ? error.message : '알 수 없는 오류';
+      throw new Error(`레시피 생성에 실패했습니다: ${errorMessage}`);
     }
   }
 
@@ -149,22 +148,22 @@ export class OpenAIService {
     userRequirement: string,
     basicRequirement?: string,
   ): string {
-    let prompt = `Create a detailed recipe based on the following requirements:\n\n`;
+    let prompt = `다음 요구사항을 바탕으로 상세한 레시피를 작성해주세요:\n\n`;
 
     if (basicRequirement) {
-      prompt += `Basic Requirements: ${basicRequirement}\n`;
+      prompt += `기본 요구사항: ${basicRequirement}\n`;
     }
 
-    prompt += `Specific Request: ${userRequirement}\n\n`;
+    prompt += `세부 요청: ${userRequirement}\n\n`;
 
-    prompt += `Requirements:
-- Make the recipe practical and achievable
-- Include specific measurements in ingredients
-- Provide clear, step-by-step instructions
-- Consider dietary restrictions if mentioned
-- Suggest appropriate cooking time and servings
-- Add relevant tags (cuisine type, dietary info, etc.)
-- Use Korean ingredients and cooking methods when appropriate`;
+    prompt += `요구사항:
+- 레시피는 실용적이고 현실적으로 작성할 것
+- 재료에는 구체적인 계량을 포함할 것
+- 명확한 단계별 조리 방법을 제공할 것
+- 언급된 식이 제한(알레르기, 채식 등)을 고려할 것
+- 적절한 조리 시간(분)과 인분 수를 제안할 것
+- 관련 태그(요리 분류, 식이 정보 등)를 추가할 것
+- 설명은 한국어로 작성할 것`;
 
     return prompt;
   }
@@ -173,7 +172,7 @@ export class OpenAIService {
     recipe: unknown,
   ): asserts recipe is RecipeGenerationResult {
     if (!recipe || typeof recipe !== 'object') {
-      throw new Error('Recipe must be an object');
+      throw new Error('레시피는 객체여야 합니다');
     }
 
     const recipeObj = recipe as Record<string, unknown>;
@@ -191,7 +190,7 @@ export class OpenAIService {
 
     for (const field of requiredFields) {
       if (!(field in recipeObj)) {
-        throw new Error(`Missing required field: ${field}`);
+        throw new Error(`필수 필드가 없습니다: ${field}`);
       }
     }
 
@@ -199,47 +198,47 @@ export class OpenAIService {
       !Array.isArray(recipeObj.ingredients) ||
       recipeObj.ingredients.length === 0
     ) {
-      throw new Error('Ingredients must be a non-empty array');
+      throw new Error('재료는 비어있지 않은 배열이어야 합니다');
     }
 
     if (
       !Array.isArray(recipeObj.instructions) ||
       recipeObj.instructions.length === 0
     ) {
-      throw new Error('Instructions must be a non-empty array');
+      throw new Error('조리 방법은 비어있지 않은 배열이어야 합니다');
     }
 
     if (
       typeof recipeObj.difficulty !== 'string' ||
       !['easy', 'medium', 'hard'].includes(recipeObj.difficulty)
     ) {
-      throw new Error('Difficulty must be easy, medium, or hard');
+      throw new Error('난이도는 easy, medium, 또는 hard 중 하나여야 합니다');
     }
 
     if (
       typeof recipeObj.cookingTime !== 'number' ||
       recipeObj.cookingTime <= 0
     ) {
-      throw new Error('Cooking time must be a positive number');
+      throw new Error('조리 시간은 양수여야 합니다');
     }
 
     if (typeof recipeObj.servings !== 'number' || recipeObj.servings <= 0) {
-      throw new Error('Servings must be a positive number');
+      throw new Error('인분 수는 양수여야 합니다');
     }
 
     if (!Array.isArray(recipeObj.tags)) {
-      throw new Error('Tags must be an array');
+      throw new Error('태그는 배열이어야 합니다');
     }
 
     if (typeof recipeObj.title !== 'string' || !recipeObj.title.trim()) {
-      throw new Error('Title must be a non-empty string');
+      throw new Error('제목은 비어있지 않은 문자열이어야 합니다');
     }
 
     if (
       typeof recipeObj.description !== 'string' ||
       !recipeObj.description.trim()
     ) {
-      throw new Error('Description must be a non-empty string');
+      throw new Error('설명은 비어있지 않은 문자열이어야 합니다');
     }
   }
 }

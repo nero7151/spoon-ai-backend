@@ -99,19 +99,19 @@ export class RecipeService {
           title: generatedRecipe.title,
           description: `${generatedRecipe.description}
 
-Ingredients:
+재료:
 ${generatedRecipe.ingredients.join('\n')}
 
-Cooking Time: ${generatedRecipe.cookingTime} minutes
+조리 시간: ${generatedRecipe.cookingTime} 분
 
-Servings: ${generatedRecipe.servings}
+인분: ${generatedRecipe.servings}
 
-Difficulty: ${generatedRecipe.difficulty}
+난이도: ${generatedRecipe.difficulty}
 
-Instructions:
+조리 방법:
 ${generatedRecipe.instructions.join('\n')}
 
-Tags:
+태그:
 ${generatedRecipe.tags.join(', ')}`,
           user_id: foundUser.id,
           requirement_id: requirement.id,
