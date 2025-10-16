@@ -41,6 +41,27 @@ export class UserController {
     return this.userService.getRecipes(req.user.id);
   }
 
+  @Get('preferences')
+  @UseGuards(JwtAuthGuard)
+  async getPreferences(@Request() req: { user: User }) {
+    const pref = await this.userService.getPreferences(req.user.id);
+    return { preferences: pref };
+  }
+
+  @Patch('preferences')
+  @UseGuards(JwtAuthGuard)
+  async setPreferences(
+    @Body() body: { preferences: string },
+    @Request() req: { user: User },
+  ) {
+    // allow user to set their own preferences (requirement_basic)
+    const updated = await this.userService.setPreferences(
+      req.user.id,
+      body.preferences,
+    );
+    return { preferences: updated };
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {

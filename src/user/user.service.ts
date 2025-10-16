@@ -80,4 +80,21 @@ export class UserService {
       orderBy: { created_at: 'desc' },
     });
   }
+
+  async getPreferences(userId: number): Promise<string | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { requirement_basic: true },
+    });
+    return user?.requirement_basic ?? null;
+  }
+
+  async setPreferences(userId: number, preferences: string): Promise<string> {
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { requirement_basic: preferences },
+      select: { requirement_basic: true },
+    });
+    return updated.requirement_basic;
+  }
 }
